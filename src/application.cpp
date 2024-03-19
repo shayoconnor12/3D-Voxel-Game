@@ -11,8 +11,6 @@
 #include "vertexArray.h"
 #include "shader.h"
 
-
-
 int main(void)
 {
     /* DECLARING THE WINDOW */
