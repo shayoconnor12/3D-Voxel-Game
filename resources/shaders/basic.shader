@@ -2,10 +2,22 @@
 #version 330 core
 
 layout(location = 0) in vec4 position;
+layout(location = 1) in vec2 texCoord;
+
+out vec2 vTexCoord;
+
+uniform int uDimension;
+uniform vec2 uOffset;
+
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
 
 void main()
 {
-   gl_Position = position;
+	vec3 newPosition = position.xyz;
+	gl_Position = uProjection * uView * uModel * vec4(newPosition, 1.0f);
+	vTexCoord = 1 - ((texCoord/uDimension) + uOffset);
 };
 
 #shader fragment
@@ -13,9 +25,12 @@ void main()
 
 layout(location = 0) out vec4 colour;
 
-uniform vec4 uColour;
+in vec2 vTexCoord;
+
+uniform sampler2D uTexture;
 
 void main()
 {
-   colour = uColour;
+	vec4 texColour = texture(uTexture, vTexCoord);
+	colour = texColour;
 }; 

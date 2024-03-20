@@ -101,12 +101,33 @@ void shader::unBind() const
     glUseProgram(0);
 }
 
+void shader::setUniform1i(const std::string& name, int value)
+{
+    glUniform1i(getUniformLocation(name), value);
+}
+
+void shader::setMatrixUniform(const std::string& matrixName, glm::mat4 matrix)
+{
+    glUniformMatrix4fv(getUniformLocation(matrixName), 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void shader::setAtlasUniform(const std::string& atlasName, const std::string& offsetName, int atlasDimension, float xOffset, float yOffset)
+{
+    glUniform1i(getUniformLocation(atlasName), atlasDimension);
+    glUniform2f(getUniformLocation(offsetName), xOffset, yOffset);
+}
+
+void shader::setUniform1f(const std::string& name, float value)
+{
+    glUniform1f(getUniformLocation(name), value);
+}
+
 void shader::setUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 {
     glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
 }
 
-unsigned int shader::getUniformLocation(const std::string& name)
+int shader::getUniformLocation(const std::string& name)
 {
     if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
         return mUniformLocationCache[name];
