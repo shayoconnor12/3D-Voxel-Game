@@ -9,14 +9,12 @@ out vec2 vTexCoord;
 uniform int uDimension;
 uniform vec2 uOffset;
 
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
+uniform mat4 uCameraMatrix;
 
 void main()
 {
 	vec3 newPosition = position.xyz;
-	gl_Position = uProjection * uView * uModel * vec4(newPosition, 1.0f);
+	gl_Position = uCameraMatrix * vec4(newPosition, 1.0f);
 	vTexCoord = 1 - ((texCoord/uDimension) + uOffset);
 };
 
