@@ -1,5 +1,5 @@
 #include "texture.h"
-#include "vendor/stbImage/stbImage.h"
+#include "../vendor/stbImage/stbImage.h"
 #include <iostream>
 
 texture::texture(const std::string& path)

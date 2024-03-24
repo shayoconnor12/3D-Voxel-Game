@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 class indexBuffer
 {
@@ -6,7 +7,7 @@ class indexBuffer
 		unsigned int mRendererID;
 		unsigned int mCount;
 	public:
-		indexBuffer(const unsigned int* data, unsigned int count);
+		indexBuffer(const std::vector<unsigned int>& data, unsigned int count);
 		~indexBuffer();
 
 		void Bind() const;
