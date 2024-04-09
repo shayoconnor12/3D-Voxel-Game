@@ -24,7 +24,7 @@ bool glLogCall(const char* function, const char* file, int line)
 void renderer::Clear() const
 {
     /* Render here */
-    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+    glClearColor(0.5f, 0.65f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

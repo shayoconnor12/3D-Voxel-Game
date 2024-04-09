@@ -21,6 +21,8 @@
 #include "camera.h"
 #include "chunk.h"
 
+
+
 const int width  = 1000;
 const int height = 1000;
 bool looking = true;
@@ -75,13 +77,12 @@ int main(void)
         text.Bind();
         shader.setUniform1i("uTexture", 0);
 
-        int textureIndex = 4;
+        int textureIndex = 3;
 
         int dimension = text.getAtlasDimension();
         float xOffset = text.getTextureXOffset(textureIndex);
         float yOffset = text.getTextureYOffset(textureIndex);
 
-        shader.setAtlasUniform("uDimension", "uOffset", dimension, xOffset, yOffset);
         shader.setMatrixUniform("uModelMatrix", glm::mat4(1.0f));
 
         renderer simpleRender;
@@ -92,13 +93,28 @@ int main(void)
 
         camera playerCam(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 
-        chunk Chunk({0.0f, 0.0f, -5.0f});
+        chunk Chunk({0.0f, 0.0f, -10.0f});
+
+        double lastTime = glfwGetTime();
+        int nbFrames = 0;
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
+            double currentTime = glfwGetTime();
+            nbFrames++;
+            if (currentTime - lastTime >= 1.0) 
+            { 
+                
+                printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+                nbFrames = 0;
+                lastTime += 1.0;
+            }
+
             if (looking) playerCam.inputs(window);
-            playerCam.matrix(90.0f, 0.1f, 100.0f, shader, "uCameraMatrix");
+            playerCam.matrix(100.0f, 0.1f, 100.0f, shader, "uCameraMatrix");
+
+            simpleRender.Clear();
 
             Chunk.renderChunk(shader, simpleRender);
 

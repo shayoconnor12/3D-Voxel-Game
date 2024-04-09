@@ -7,7 +7,9 @@ class indexBuffer
 		unsigned int mRendererID;
 		unsigned int mCount;
 	public:
-		indexBuffer(const std::vector<unsigned int>& data, unsigned int count);
+
+		indexBuffer();
+		void setIndexBuffer(const std::vector<unsigned int>& data, unsigned int count);
 		~indexBuffer();
 
 		void Bind() const;

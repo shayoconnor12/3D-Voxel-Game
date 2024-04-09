@@ -9,7 +9,9 @@ class vertexBuffer
 		unsigned int mRendererID;
 	public:
 
-		vertexBuffer(const std::vector<float>& vertices);
+		vertexBuffer();
+
+		void setVertexBuffer(const std::vector<float>& vertices);
 
 		~vertexBuffer();
 

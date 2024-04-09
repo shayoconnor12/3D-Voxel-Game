@@ -1,62 +1,92 @@
 #include "chunk.h"
+#include "../vendor/noise/FastNoiseLite.h"
 #include <iostream>
+#include <random>
 
 chunk::chunk(std::vector<float> chunkPos)
 {
-	chunkPosition = chunkPos;
+	dx = chunkPos[0];
+	dy = chunkPos[1];
+	dz = chunkPos[2];
 
-	genBlocks();
+
+	std::vector<std::vector<float>> heightMap = genChunk();
+	genBlocks(heightMap);
+	setBuffers();
 }
 
-void chunk::genBlocks()
+void chunk::renderChunk(shader& shaderProgram, renderer& rendererProgram)
 {
-	unsigned int faceCount;
-	for (int i = 0; i < 3; i++)
-	{
-		faceCount = 0;
-
-		block generatedBlock({(float) i, 0.0, 0.0});
-
-		//i know i can probably use a loop here i just think the code looks cool
-		//also this is probably a lot more readable, and uses less memory than a loop would
-
-		std::vector<float> frontFaceData	= generatedBlock.getFaceData(FRONT);
-		std::vector<float> backFaceData		= generatedBlock.getFaceData(BACK);
-		std::vector<float> rightFaceData	= generatedBlock.getFaceData(RIGHT);
-		std::vector<float> leftFaceData		= generatedBlock.getFaceData(LEFT);
-		std::vector<float> topFaceData		= generatedBlock.getFaceData(TOP);
-		std::vector<float> bottomFaceData	= generatedBlock.getFaceData(BOTTOM);
-		
-		chunkVertices.insert(chunkVertices.end(), frontFaceData .begin(), frontFaceData .end());
-		chunkVertices.insert(chunkVertices.end(), backFaceData	.begin(), backFaceData	.end());
-		chunkVertices.insert(chunkVertices.end(), rightFaceData .begin(), rightFaceData .end());
-		chunkVertices.insert(chunkVertices.end(), leftFaceData	.begin(), leftFaceData	.end());
-		chunkVertices.insert(chunkVertices.end(), topFaceData	.begin(), topFaceData	.end());
-		chunkVertices.insert(chunkVertices.end(), bottomFaceData.begin(), bottomFaceData.end());
-
-		faceCount += 6;
-
-		addIndices(faceCount);
-	}
-}
-
-void chunk::renderChunk(shader shaderProgram, renderer rendererProgram)
-{
-	rendererProgram.Clear();
-
-	vertexArray chunkVAO;
-	vertexBuffer chunkVBO = vertexBuffer(chunkVertices);
-	vertexBufferLayout layout;
-	layout.Push<float>(3);
-	layout.Push<float>(2);
-	chunkVAO.addBuffer(chunkVBO, layout);
-
-	indexBuffer chunkIBO = indexBuffer(chunkIndices, chunkIndices.size() * sizeof(unsigned int));
-	rendererProgram.Clear();
 	shaderProgram.Bind();
 	chunkVAO.Bind();
 	chunkIBO.Bind();
 	rendererProgram.Draw(chunkVAO, chunkIBO, shaderProgram);
+}
+
+std::vector<std::vector<float>> chunk::genChunk()
+{
+	std::vector<std::vector<float>> heightMap(WIDTH, std::vector<float>(WIDTH));
+	FastNoiseLite noise;
+	noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noise.SetSeed(38374);
+
+	for (int x = 0; x < WIDTH; x++)
+	{
+		for (int z = 0; z < WIDTH; z++)
+		{
+			heightMap[x][z] = noise.GetNoise((float)x, (float)z);
+		}
+	}
+	return heightMap;
+}
+
+void chunk::genBlocks(std::vector<std::vector<float>> heights)
+{
+	std::vector<std::vector<std::vector<block>>> chunkBlocks(WIDTH, std::vector<std::vector<block>>(HEIGHT, std::vector<block>(WIDTH, block({ 0.0f,0.0f,0.0f }))));
+
+	unsigned int faceCount;
+	for (int x = 0; x < WIDTH; x++)
+	{
+		for (int z = 0; z < WIDTH; z++)
+		{
+			int columnHeight = (int)(heights[x][z] * 10);
+			//std::cout << "COLUMN HEIGHT AT " << x << "," << z << " = " << columnHeight << std::endl;
+			for (int y = 0; y < columnHeight; y++)
+			{
+				faceCount = 0;
+
+				block generatedBlock({ (float)x + dx, (float)y + dy, (float)z + dz }, GRASS);
+
+				integrateFace(generatedBlock, FRONT);
+				integrateFace(generatedBlock, BACK);
+				integrateFace(generatedBlock, RIGHT);
+				integrateFace(generatedBlock, LEFT);
+				integrateFace(generatedBlock, TOP);
+				integrateFace(generatedBlock, BOTTOM);
+
+				faceCount += 6;
+
+				addIndices(faceCount);
+			}
+		}
+	}
+}
+
+
+void chunk::integrateFace(block& block, faces face)
+{
+	std::vector<float> faceData = block.getFaceData(face);
+	chunkVertices.insert(chunkVertices.end(), faceData.begin(), faceData.end());
+}
+
+void chunk::setBuffers()
+{
+	chunkVBO.setVertexBuffer(chunkVertices);
+	layout.Push<float>(3);
+	layout.Push<float>(2);
+	chunkVAO.addBuffer(chunkVBO, layout);
+	chunkIBO.setIndexBuffer(chunkIndices, chunkIndices.size() * sizeof(unsigned int));
+	std::cout << "HELLO" << std::endl;
 }
 
 void chunk::addIndices(unsigned int faceCount)

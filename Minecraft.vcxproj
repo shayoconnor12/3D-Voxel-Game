@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -173,6 +173,7 @@
     <ClInclude Include="src\graphics\vertexArray.h" />
     <ClInclude Include="src\graphics\vertexBuffer.h" />
     <ClInclude Include="src\graphics\vertexBufferLayout.h" />
+    <ClInclude Include="src\vendor\noise\FastNoiseLite.h" />
     <ClInclude Include="src\vendor\stbImage\stbImage.h" />
   </ItemGroup>
   <ItemGroup>

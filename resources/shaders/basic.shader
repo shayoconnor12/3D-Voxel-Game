@@ -6,9 +6,6 @@ layout(location = 1) in vec2 texCoord;
 
 out vec2 vTexCoord;
 
-uniform int uDimension;
-uniform vec2 uOffset;
-
 uniform mat4 uCameraMatrix;
 uniform mat4 uModelMatrix;
 
@@ -16,7 +13,7 @@ void main()
 {
 	vec3 newPosition = position.xyz;
 	gl_Position = uCameraMatrix * uModelMatrix * vec4(newPosition, 1.0f);
-	vTexCoord = 1 - ((texCoord/uDimension) + uOffset);
+	vTexCoord = texCoord;
 };
 
 #shader fragment
