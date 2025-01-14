@@ -1,2 +1,1 @@
-Learning OpenGL by cloning minecraft
-Extremely original idea, no one has ever done this before
+basic minecraft clone in c++, using glfw with opengl
